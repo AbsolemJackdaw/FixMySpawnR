@@ -36,7 +36,7 @@ authors="Absolem Jackdaw" #optional
 description='''
 '''
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
-[[dependencies.multiloader]] #optional
+[[dependencies.fixmyspawnr]] #optional
     # the modid of the dependency
     modId="forge" #mandatory
     # Does this dependency have to exist - if not, ordering below must be specified
@@ -46,9 +46,9 @@ description='''
     # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
     ordering="NONE"
     # Side this dependency is applied on - BOTH, CLIENT or SERVER
-    side="BOTH"
+    side="SERVER"
 # Here's another dependency
-[[dependencies.multiloader]]
+[[dependencies.fixmyspawnr]]
     modId="minecraft"
     mandatory=true
 # This version range declares a minimum of the current minecraft version up to but not including the next major version
