@@ -13,6 +13,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.Optional;
+
 @Mixin(BaseSpawner.class)
 public class StopServerLogicIfPowered {
 
@@ -29,8 +31,8 @@ public class StopServerLogicIfPowered {
                 blockExistsTick++;
             }
         }
-
-        if (blockLockedByTime && level.getBlockState(pos.above()).getSignal(level, pos, Direction.UP) < 8) {
+        int signal = level.getBestNeighborSignal(pos);
+        if (blockLockedByTime && signal > 0) {
             ci.cancel();
             return;
         }
