@@ -1,12 +1,12 @@
 {
     "schemaVersion": 1,
-    "id": "modid",
+    "id": "fixmyspawnr",
     "version": "${version}",
   
-    "name": "Example Mod",
-    "description": "This is an example description! Tell everyone what your mod is about!",
+    "name": "FixMySpawnR",
+    "description": "disables spawners after a set time (config). bypass deactivation with a redstone signal",
     "authors": [
-      "Me!"
+      "AbsolemJackdaw"
     ],
     "contact": {
       "homepage": "https://fabricmc.net/",
@@ -30,7 +30,7 @@
     "depends": {
       "fabricloader": ">=0.12",
       "fabric": "*",
-      "minecraft": "1.18.x",
+      "minecraft": "1.19",
       "java": ">=17"
     },
     "suggests": {

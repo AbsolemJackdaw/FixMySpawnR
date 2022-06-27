@@ -34,6 +34,7 @@ credits="MMD" #optional
 authors="Absolem Jackdaw" #optional
 # The description text for the mod (multi line!) (#mandatory)
 description='''
+disables spawners after a set time (config). bypass deactivation with a redstone signal
 '''
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
 [[dependencies.fixmyspawnr]] #optional
