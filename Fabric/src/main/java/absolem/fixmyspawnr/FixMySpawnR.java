@@ -8,10 +8,15 @@ import net.minecraft.world.InteractionResult;
 public class FixMySpawnR implements ModInitializer {
     @Override
     public void onInitialize() {
+
         AutoConfig.register(ModConfig.class, Toml4jConfigSerializer::new);
         AutoConfig.getConfigHolder(ModConfig.class).registerSaveListener((configHolder, config) -> {
             CommonConfig.timer_time_out = config.timer_time_out;
             return InteractionResult.PASS;
         });
+
+        //Set on init as well
+        ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
+        CommonConfig.timer_time_out = config.timer_time_out;
     }
 }

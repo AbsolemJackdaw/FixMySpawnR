@@ -1,31 +1,49 @@
 plugins {
-    id 'fabric-loom' version '0.12-SNAPSHOT'
-    id 'maven-publish'
-    id 'idea'
+    id 'multiloader-loader'
+    id 'fabric-loom'
+    id 'net.darkhax.curseforgegradle' version '1.0.11'
 }
 
-archivesBaseName = "${mod_name}-fabric-${minecraft_version}"
-
-repositories {
+repositories { //all of these are for adding crates compat
+    mavenLocal()
+    maven {
+        name = 'Curse Maven'
+        url = 'https://cursemaven.com'
+        content {
+            includeGroup 'curse.maven'
+        }
+    }
+    maven { url 'https://maven.blamejared.com' }
+    maven {
+        url = "https://maven.theillusivec4.top/"
+    }
     maven { url "https://maven.shedaniel.me/" }
-    maven { url "https://maven.terraformersmc.com/releases/" }
+
 }
 
 dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
-    mappings loom.officialMojangMappings()
+    mappings loom.layered {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-${parchment_minecraft}:${parchment_version}@zip")
+    }
     modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
+    modImplementation("curse.maven:cloth-config-348521:${cloth_config_version}")
+    modImplementation("curse.maven:modmenu-308702:${mod_menu_version}")
+    modImplementation("me.shedaniel.cloth:basic-math:0.6.1")
 
-    modApi("me.shedaniel.cloth:cloth-config-fabric:${cloth_config_version}") {
-        exclude(group: "net.fabricmc.fabric-api")
-    }
-    modImplementation "com.terraformersmc:modmenu:${mod_menu_version}"
-
-    implementation project(":Common")
+    implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.1'
+    implementation project(":common")
 }
 
 loom {
+    if (project(":common").file("src/main/resources/${mod_id}.accesswidener").exists()) {
+        accessWidenerPath.set(project(":common").file("src/main/resources/${mod_id}.accesswidener"))
+    }
+    mixin {
+        defaultRefmapName.set("${mod_id}.refmap.json")
+    }
     runs {
         client {
             client()
@@ -42,43 +60,17 @@ loom {
     }
 }
 
-
-processResources {
-    from project(":Common").sourceSets.main.resources
-    inputs.property "version", project.version
-
-    filesMatching("fabric.mod.json") {
-        expand "version": project.version
-    }
-
-    filesMatching('*.mixins.json') {
-        expand "refmap_target": "${archivesBaseName}-"
-    }
-}
-
-tasks.withType(JavaCompile) {
-    source(project(":Common").sourceSets.main.allSource)
-}
-
-jar {
-    from("LICENSE") {
-        rename { "${it}_${mod_name}" }
-    }
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            groupId project.group
-            artifactId project.archivesBaseName
-            version project.version
-            from components.java
-        }
-    }
-
-    repositories {
-        maven {
-            url "file://" + System.getenv("local_maven")
-        }
-    }
+tasks.register('publishCurseForge', net.darkhax.curseforgegradle.TaskPublishCurseForge) {
+    apiToken = findProperty('cf_api_token')
+    // The main file to upload
+    def mainFile = upload(626476, file("${project.buildDir}/libs/${archivesBaseName}-${version}.jar"))
+    mainFile.displayName = "FixMySpawneR-fabric-${minecraft_version}-${version}"
+    mainFile.releaseType = "${release}"
+    mainFile.changelog = "${changelog}"
+    mainFile.changelogType = 'markdown'
+    mainFile.addJavaVersion('Java 17')
+    mainFile.addGameVersion("${minecraft_version}")
+    mainFile.addModLoader('fabric')
+    mainFile.addModLoader('quilt')
+    mainFile.addRequirement('fabric-api')
 }

@@ -1,40 +1,36 @@
 {
-    "schemaVersion": 1,
-    "id": "fixmyspawnr",
-    "version": "${version}",
-  
-    "name": "FixMySpawnR",
-    "description": "disables spawners after a set time (config). bypass deactivation with a redstone signal",
-    "authors": [
-      "AbsolemJackdaw"
+  "schemaVersion": 1,
+  "id": "fixmyspawnr",
+  "version": "${version}",
+  "name": "FixMySpawnR",
+  "description": "disables spawners after a set time (config). bypass deactivation with a redstone signal",
+  "authors": [
+    "AbsolemJackdaw"
+  ],
+  "contact": {
+    "homepage": "https://fabricmc.net/",
+    "sources": "https://github.com/FabricMC/fabric-example-mod"
+  },
+  "license": "CC0-1.0",
+  "icon": "assets/modid/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "absolem.fixmyspawnr.FixMySpawnR"
     ],
-    "contact": {
-      "homepage": "https://fabricmc.net/",
-      "sources": "https://github.com/FabricMC/fabric-example-mod"
-    },
-  
-    "license": "CC0-1.0",
-    "icon": "assets/modid/icon.png",
-  
-    "environment": "*",
-    "entrypoints": {
-      "main": [
-        "absolem.fixmyspawnr.FixMySpawnR"
-      ]
-    },
-    "mixins": [
-      "fixmyspawnr.mixins.json",
-      "fixmyspawnr.fabric.mixins.json"
-    ],
-  
-    "depends": {
-      "fabricloader": ">=0.12",
-      "fabric": "*",
-      "minecraft": "1.19",
-      "java": ">=17"
-    },
-    "suggests": {
-      "another-mod": "*"
-    }
+    "modmenu": [
+      "absolem.fixmyspawnr.ModMenuConfigScreen"
+    ]
+  },
+  "mixins": [
+    "fixmyspawnr.mixins.json",
+    "fixmyspawnr.fabric.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.12",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}",
+    "java": ">=17"
   }
+}
   

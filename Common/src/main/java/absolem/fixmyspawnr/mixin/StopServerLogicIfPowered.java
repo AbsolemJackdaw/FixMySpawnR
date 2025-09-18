@@ -2,7 +2,6 @@ package absolem.fixmyspawnr.mixin;
 
 import absolem.fixmyspawnr.CommonConfig;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.BaseSpawner;
@@ -12,8 +11,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.util.Optional;
 
 @Mixin(BaseSpawner.class)
 public class StopServerLogicIfPowered {
@@ -32,21 +29,31 @@ public class StopServerLogicIfPowered {
             }
         }
         int signal = level.getBestNeighborSignal(pos);
-        if (blockLockedByTime && signal > 0) {
+        if (blockLockedByTime && signal == 0) {
+
             ci.cancel();
             return;
         }
     }
 
-    @Inject(at = @At("TAIL"), method = "save")
+    @Inject(at = @At("RETURN"), method = "save")
     public void addTickToSave(CompoundTag tag, CallbackInfoReturnable<CompoundTag> cir) {
-        tag.putInt("fixmyspawnrTicks", blockExistsTick);
-        tag.putBoolean("fixMySpawnerLocked", blockLockedByTime);
+        CompoundTag ntag = new CompoundTag();
+        ntag.putInt("fixmyspawnrTicks", blockExistsTick);
+        ntag.putBoolean("fixMySpawnerLocked", blockLockedByTime);
+        tag.put("FMS_data", ntag);
     }
 
-    @Inject(at = @At("TAIL"), method = "load")
+    @Inject(at = @At("HEAD"), method = "load")
     public void loadTickFromSave(Level level, BlockPos pos, CompoundTag tag, CallbackInfo ci) {
-        blockExistsTick = tag.getInt("fixmyspawnrTicks");
-        blockLockedByTime = tag.getBoolean("fixMySpawnerLocked");
+        if (tag.contains("FMS_data")) {
+            blockLockedByTime = false;
+            blockExistsTick = 0;
+            CompoundTag ntag = tag.getCompound("FMS_data");
+            if (ntag.contains("fixMySpawnerLocked"))
+                blockLockedByTime = ntag.getBoolean("fixMySpawnerLocked");
+            if (ntag.contains("fixmyspawnrTicks"))
+                blockExistsTick = ntag.getInt("fixmyspawnrTicks");
+        }
     }
 }

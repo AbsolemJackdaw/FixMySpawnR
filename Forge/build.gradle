@@ -1,78 +1,45 @@
-buildscript {
-    repositories {
-        maven { url = 'https://maven.minecraftforge.net' }
-        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
-        mavenCentral()
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
-        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
-    }
+plugins {
+    id 'multiloader-loader'
+    id 'net.neoforged.moddev.legacyforge'
+    id 'net.darkhax.curseforgegradle' version '1.0.11'
 }
-apply plugin: 'java'
-apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'eclipse'
-apply plugin: 'org.spongepowered.mixin'
-apply plugin: 'maven-publish'
-
-archivesBaseName = "${mod_name}-forge-${minecraft_version}"
 
 mixin {
-    add sourceSets.main, "${mod_id}.refmap.json"
+    add(sourceSets.main, "${mod_id}.refmap.json")
 
-    config "${mod_id}.mixins.json"
-    config "${mod_id}.forge.mixins.json"
+    config("${mod_id}.mixins.json")
+    config("${mod_id}.forge.mixins.json")
 }
 
-minecraft {
-    mappings channel: 'official', version: minecraft_version
+legacyForge {
+    version = "${minecraft_version}-${forge_version}"
 
-    if (project.hasProperty('forge_ats_enabled') && project.findProperty('forge_ats_enabled').toBoolean()) {
-        // This location is hardcoded in Forge and can not be changed.
-        // https://github.com/MinecraftForge/MinecraftForge/blob/be1698bb1554f9c8fa2f58e32b9ab70bc4385e60/fmlloader/src/main/java/net/minecraftforge/fml/loading/moddiscovery/ModFile.java#L123
-        accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
-        project.logger.debug('Forge Access Transformers are enabled for this project.')
+    validateAccessTransformers = true
+
+    def at = project(':common').file('src/main/resources/META-INF/accesstransformer.cfg')
+    if (at.exists()) {
+        accessTransformers = ["src/main/resources/META-INF/accesstransformer.cfg"]
     }
-
+    parchment {
+        minecraftVersion = parchment_minecraft
+        mappingsVersion = parchment_version
+    }
     runs {
         client {
-            workingDirectory project.file('run')
-            ideaModule "${rootProject.name}.${project.name}.main"
-            taskName 'Client'
-            args "-mixin.config=${mod_id}.mixins.json", "-mixin.config=${mod_id}.forge.mixins.json"
-            mods {
-                modClientRun {
-                    source sourceSets.main
-                    source project(":Common").sourceSets.main
-                }
-            }
+            client()
         }
-
-        server {
-            workingDirectory project.file('run')
-            ideaModule "${rootProject.name}.${project.name}.main"
-            taskName 'Server'
-            args "-mixin.config=${mod_id}.mixins.json", "-mixin.config=${mod_id}.forge.mixins.json"
-            mods {
-                modServerRun {
-                    source sourceSets.main
-                    source project(":Common").sourceSets.main
-                }
-            }
-        }
-
         data {
-            workingDirectory project.file('run')
-            ideaModule "${rootProject.name}.${project.name}.main"
-            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-            taskName 'Data'
-            args "-mixin.config=${mod_id}.mixins.json", "-mixin.config=${mod_id}.forge.mixins.json"
-            mods {
-                modDataRun {
-                    source sourceSets.main
-                    source project(":Common").sourceSets.main
-                }
-            }
+            data()
+            programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+        }
+        server {
+            server()
+        }
+    }
+
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
         }
     }
 }
@@ -80,38 +47,26 @@ minecraft {
 sourceSets.main.resources.srcDir 'src/generated/resources'
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    compileOnly project(":Common")
-    annotationProcessor 'org.spongepowered:mixin:0.8.4-SNAPSHOT:processor'
+    compileOnly project(":common")
+    annotationProcessor("org.spongepowered:mixin:0.8.5-SNAPSHOT:processor")
 }
 
-tasks.withType(JavaCompile) {
-    source(project(":Common").sourceSets.main.allSource)
+jar {
+    finalizedBy('reobfJar')
+    manifest.attributes([
+            "MixinConfigs": "${mod_id}.mixins.json,${mod_id}.forge.mixins.json"
+    ])
 }
 
-processResources {
-    from project(":Common").sourceSets.main.resources
-
-    filesMatching('*.mixins.json') {
-        expand "refmap_target": "${mod_id}."
-    }
-}
-
-
-jar.finalizedBy('reobfJar')
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            groupId project.group
-            artifactId project.archivesBaseName
-            version project.version
-            artifact jar
-        }
-    }
-    repositories {
-        maven {
-            url "file://" + System.getenv("local_maven")
-        }
-    }
+tasks.register('publishCurseForge', net.darkhax.curseforgegradle.TaskPublishCurseForge) {
+    apiToken = findProperty('cf_api_token')
+    def mainFile = upload(626476, file("${project.buildDir}/libs/${archivesBaseName}-${version}.jar"))
+    mainFile.displayName = "FixMySpawneR-forge-${minecraft_version}-${version}"
+    mainFile.releaseType = "${release}"
+    mainFile.changelog = "${changelog}"
+    mainFile.changelogType = 'markdown'
+    mainFile.addJavaVersion('Java 17')
+    mainFile.addGameVersion("${minecraft_version}")
+    mainFile.addModLoader('neoforge')
+    mainFile.addModLoader('forge')
 }
