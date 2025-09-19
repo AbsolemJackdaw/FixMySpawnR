@@ -1,15 +1,15 @@
 package absolem.fixmyspawnr;
 
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class ConfigData {
 
     public static final ServerConfig SERVER;
-    public static final ForgeConfigSpec SERVER_SPEC;
+    public static final ModConfigSpec SERVER_SPEC;
 
     static {
-        final Pair<ServerConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(ServerConfig::new);
+        final Pair<ServerConfig, ModConfigSpec> specPair = new ModConfigSpec.Builder().configure(ServerConfig::new);
         SERVER_SPEC = specPair.getRight();
         SERVER = specPair.getLeft();
     }
@@ -22,9 +22,9 @@ public class ConfigData {
 
     public static class ServerConfig {
 
-        public final ForgeConfigSpec.IntValue timer_time_out;
+        public final ModConfigSpec.IntValue timer_time_out;
 
-        ServerConfig(ForgeConfigSpec.Builder builder) {
+        ServerConfig(ModConfigSpec.Builder builder) {
 
             builder.push("general");
             timer_time_out = builder.
