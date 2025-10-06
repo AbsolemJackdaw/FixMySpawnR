@@ -1,6 +1,6 @@
 package absolem.fixmyspawnr.mixin;
 
-import absolem.fixmyspawnr.CommonConfig;
+import absolem.fixmyspawnr.Config;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
@@ -22,7 +22,7 @@ public class StopServerLogicIfPowered {
     public void stopLogicIfPowered(ServerLevel level, BlockPos pos, CallbackInfo ci) {
 
         if (!blockLockedByTime) {
-            if (blockExistsTick > CommonConfig.timer_time_out) {
+            if (blockExistsTick > Config.timer_time_out) {
                 blockLockedByTime = true;
             } else {
                 blockExistsTick++;

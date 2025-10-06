@@ -3,7 +3,7 @@ package absolem.fixmyspawnr;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 
-public class ConfigData {
+public class ModConfig {
 
     public static final ServerConfig SERVER;
     public static final ModConfigSpec SERVER_SPEC;
@@ -16,7 +16,7 @@ public class ConfigData {
 
     public static void refreshServer() {
 
-        CommonConfig.timer_time_out = SERVER.timer_time_out.get();
+        Config.timer_time_out = SERVER.timer_time_out.get();
 
     }
 
