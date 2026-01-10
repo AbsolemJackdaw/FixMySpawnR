@@ -4,9 +4,11 @@
   "package": "absolem.fixmyspawnr.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "StopServerLogicIfPowered"
+    "StopServerLogicIfPowered",
+    "StopClientLogicIfPowered",
+    "UpdateChangedIfPowered"
   ],
-   "server": [
+  "server": [
   ],
   "injectors": {
     "defaultRequire": 1

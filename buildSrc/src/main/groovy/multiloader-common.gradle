@@ -80,6 +80,7 @@ jar {
         ])
     }
 }
+
 processResources {
     var expandProps = [
             'version'                      : version,
@@ -93,14 +94,12 @@ processResources {
             'mod_id'                       : mod_id,
             'license'                      : license,
             'description'                  : project.description,
-            'credits'                      : credits,
             'neoforge_version'             : neoforge_version,
             'neoforge_loader_version_range': neoforge_loader_version_range,
+            'credits'                      : credits,
             'java_version'                 : java_version,
-            'release'                      : release,
+            'releasetype'                  : releasetype,
             'changelog'                    : changelog,
-            'cloth_config_version'         : cloth_config_version,
-            'mod_menu_version'             : mod_menu_version,
             'parchment_minecraft'          : parchment_minecraft,
             'parchment_version'            : parchment_version
     ]
@@ -124,5 +123,3 @@ publishing {
         }
     }
 }
-
-

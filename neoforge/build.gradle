@@ -2,6 +2,7 @@ plugins {
     id 'multiloader-loader'
     id 'net.neoforged.moddev'
     id 'net.darkhax.curseforgegradle' version '1.0.11'
+    id 'com.modrinth.minotaur'
 }
 
 neoForge {
@@ -24,7 +25,7 @@ neoForge {
             client()
         }
         data {
-            data()
+            clientData()
 
             // DataGen can be run by - "./gradlew :neoforge:runData" in Terminal.
             // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
@@ -46,7 +47,7 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 tasks.register('publishCurseForge', net.darkhax.curseforgegradle.TaskPublishCurseForge) {
     apiToken = findProperty('cf_api_token')
-    def mainFile = upload(626476, file("${project.buildDir}/libs/${archivesBaseName}-${version}.jar"))
+    def mainFile = upload(cf_project, file("${project.buildDir}/libs/${archivesBaseName}-${version}.jar"))
     mainFile.displayName = "FixMySpawneR-forge-${minecraft_version}-${version}"
     mainFile.releaseType = "${release}"
     mainFile.changelog = "${changelog}"
@@ -55,4 +56,15 @@ tasks.register('publishCurseForge', net.darkhax.curseforgegradle.TaskPublishCurs
     mainFile.addGameVersion("${minecraft_version}")
     mainFile.addModLoader('neoforge')
     mainFile.addModLoader('forge')
+}
+
+modrinth {
+    token.set(project.findProperty('modrinth_api_token'))
+    projectId.set(modrinth_project)
+    changelog = "${changelog}"
+    versionName.set("${mod_name}-NeoForge-${minecraft_version}-$version")
+    versionType.set("${releasetype}")
+    uploadFile.set(tasks.jar)
+    loaders = ["neoforge"]
+    gameVersions = ["${minecraft_version}"]
 }

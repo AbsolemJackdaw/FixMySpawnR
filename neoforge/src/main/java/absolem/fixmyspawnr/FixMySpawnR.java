@@ -8,7 +8,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.config.ModConfigEvent;
 
 @Mod(Constants.MODID)
-@EventBusSubscriber(modid = Constants.MODID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Constants.MODID)
 public class FixMySpawnR {
     public FixMySpawnR(IEventBus modBus, ModContainer container) {
         container.registerConfig(net.neoforged.fml.config.ModConfig.Type.SERVER, ModConfig.SERVER_SPEC);
