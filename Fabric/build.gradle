@@ -60,7 +60,7 @@ tasks.register('publishCurseForge', net.darkhax.curseforgegradle.TaskPublishCurs
     // The main file to upload
     def mainFile = upload(cf_project, file("${project.buildDir}/libs/${archivesBaseName}-${version}.jar"))
     mainFile.displayName = "FixMySpawneR-fabric-${minecraft_version}-${version}"
-    mainFile.releaseType = "${release}"
+    mainFile.releaseType = "${releasetype}"
     mainFile.changelog = "${changelog}"
     mainFile.changelogType = 'markdown'
     mainFile.addJavaVersion('Java 17')
